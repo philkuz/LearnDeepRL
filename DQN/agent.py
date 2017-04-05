@@ -32,24 +32,22 @@ class Agent:
         and adds it to the memory replay
         '''
         self.step += 1
-        print('sars_', sars_)
         self.memory.add(sars_)
 
     def replay(self):
         batch = self.memory.sample(BATCH_SIZE)
 
-        states = batch[:, 0]
-        actions = batch[:, 1]
-        rewards = batch[:, 2]
-        states_ = batch[:, 3]
+        states = batch[0]
+        actions = batch[1]
+        rewards = batch[2]
+        states_ = batch[3]
 
-        print('states', states)
         p = self.brain.predict(states)
         p_ = self.brain.predict(np.nan_to_num(states_))
 
         t = np.copy(p)
         t[:, actions] = rewards
-        real_state = not np.isnan(states_)
+        real_state = ~np.isnan(states_).any(axis=1)
         t[real_state,actions] += GAMMA * np.amax(p_, axis=1)[real_state]
 
         self.brain.train(states, t)

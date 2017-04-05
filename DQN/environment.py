@@ -15,9 +15,9 @@ class Environment:
             s_, r, done, info = self.env.step(a)
 
             if done:
-                s_ = np.nan # replace None with nan so that it will be matched by numpy stuff
+                s_ = np.array([np.nan] * len(s)) # replace None with nan so that it will be matched by numpy stuff
 
-            agent.observe( np.array([[s, a, r, s_]]))
+            agent.observe( [s, a, r, s_])
             agent.replay()
 
             s = s_
